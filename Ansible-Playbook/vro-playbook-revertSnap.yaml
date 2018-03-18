@@ -1,0 +1,28 @@
+---
+
+- name: Connecting to Ansible API
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+      vRoURL: "192.168.1.xx:8281"
+      workflowId: "85a91742-5851-45fe-a510-3d37bd593f5b"
+
+  tasks:
+    - name: POST to vRO
+      uri:
+        url: https://{{ vRoURL }}/vco/api/workflows/{{ workflowId }}/executions/
+        method: POST
+        user: rob@vsphere.local
+        password: xxxxxxxxxxxxxx
+        body: "{{ lookup('file','input.json') }}"
+        return_content: yes
+        force_basic_auth: yes
+        status_code: 202
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+        validate_certs: "no"
+        register: uri_resp
+        failed_when: uri_resp.status != 202
+...
